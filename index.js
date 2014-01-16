@@ -20,6 +20,7 @@ var XRegexp = require('xregexp').XRegExp;
             truncatedText = "";
 
         var options = options && typeof options === "object" ? options : {},
+            sectionsCount = options.sections,
             wordChars = options.wordChars instanceof RegExp ?
                 options.wordChars : XRegexp("[\\p{L}0-9\\-\\']", "i");
 
@@ -154,7 +155,9 @@ var XRegexp = require('xregexp').XRegExp;
                     if (parseState === PARSER_TAG_COMMENCED) {
 
                         parseState = PARSER_UNINITIALISED;
-                        truncatedText += tagBuffer;
+                        if(!options.removeLinks || !tagBuffer.match(/<\s*\/?a/)) {
+                            truncatedText += tagBuffer;
+                        }
                         tagName = getTagName(tagBuffer);
 
                         // Closing tag. (Do we need to be more lenient/)
@@ -176,6 +179,14 @@ var XRegexp = require('xregexp').XRegExp;
 
                             if (voidElements.indexOf(tagName) < 0 &&
                                 !tagBuffer.match(/\/\s*>$/)) {
+
+                                if (tagName ==  'h3') {
+                                    if (sectionsCount > 0) {
+                                        sectionsCount -= 1;
+                                    } else {
+                                        return truncatedText;
+                                    }
+                                }
 
                                 stack.push(tagBuffer);
                             }
