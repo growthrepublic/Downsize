@@ -188,6 +188,14 @@ var XRegexp = require('xregexp').XRegExp;
                                     }
                                 }
 
+                                if (tagName ==  'h3') {
+                                    if (sectionsCount > 0) {
+                                        sectionsCount -= 1;
+                                    } else {
+                                        return truncatedText;
+                                    }
+                                }
+
                                 stack.push(tagBuffer);
                             }
                         }
